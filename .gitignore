@@ -1,1 +1,2 @@
-MyLinkedList\.idea;
+\MyLinkedList\**;
+!src;
