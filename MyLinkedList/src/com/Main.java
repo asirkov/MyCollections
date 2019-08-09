@@ -1,6 +1,8 @@
 package com;
 
 
+import java.util.ListIterator;
+
 public class Main {
 
     public static void main(String[] args) {
@@ -32,6 +34,11 @@ public class Main {
 
         System.out.println("\nind of -3: " + l.lastIndexOf(-3));
 
+        System.out.println("\nit: ");
+        ListIterator it = l.listIterator();
+
+        while ( it.hasNext() )
+            System.out.println(it.next());
 
     }
 }

@@ -5,9 +5,6 @@ import java.util.*;
 
 
 public class MyLinkedList<T> implements List<T> {
-    /**
-     *
-     */
 
     private static class Node <T> {
         public Node<T> next;
@@ -21,42 +18,141 @@ public class MyLinkedList<T> implements List<T> {
         }
     }
 
+    private class MyIterator implements Iterator {
+        Node<T> node;
+
+        MyIterator() { node = MyLinkedList.this.head.next; }
+
+        @Override
+        public boolean hasNext() {
+            boolean result = true;
+            if (node.next == MyLinkedList.this.head)
+                result = false;
+            return result;
+        }
+
+        @Override
+        public T next() {
+            T result = node.data;
+            try {
+                node = node.next;
+            }
+            catch (NoSuchElementException ex) { System.out.println("Error: " + ex.getMessage() + " at MyIterator.next()"); }
+            return result;
+        }
+    }
+
+    private class MyListIterator implements ListIterator {
+        private Node<T> node;
+
+        MyListIterator() { node = MyLinkedList.this.head.next; }
+
+        @Override
+        public boolean hasNext() {
+            boolean result = false;
+            if (node.next != head)
+                result = true;
+            return result;
+        }
+
+        @Override
+        public T next() {
+            T result = node.data;
+            try {
+                node = node.next;
+            }
+            catch (NoSuchElementException ex) { System.out.println("Error: " + ex.getMessage() + " at MyListIterator.next()"); }
+            return result;
+        }
+
+        @Override
+        public boolean hasPrevious() {
+            boolean result = false;
+            if (node.prev != head)
+                result = true;
+            return result;
+        }
+
+        @Override
+        public T previous() {
+            T result = node.data;
+            node = node.prev;
+            return result;
+        }
+
+
+        public int currentIndex() {
+            int result = MyLinkedList.this.indexOf(node.data);
+            return result;
+        }
+
+        @Override
+        public int nextIndex() {
+            int result = currentIndex() + 1;
+            return result;
+        }
+
+        @Override
+        public int previousIndex() {
+            int result = currentIndex() - 1;
+            return result;
+        }
+
+        @Override
+        public void remove() {
+            //T remove =
+            MyLinkedList.this.remove(MyLinkedList.this.listSize);
+        }
+
+        @Override
+        public void set(Object o) {
+            MyLinkedList.this.set(MyLinkedList.this.indexOf(node.data), (T)o);
+        }
+
+        @Override
+        public void add(Object o) {
+            MyLinkedList.this.add(MyLinkedList.this.indexOf(node.data), (T)o);
+        }
+    };
+
+
     /**
      *
      */
 
-    private int listsize;
+    private int listSize;
     private Node<T> head;
 
     MyLinkedList() {
         head = new Node<T>(null, null, null);
         head.next = head;
         head.prev = head;
-        listsize = 0;
+        listSize = 0;
     }
 
     @Override
-    public int size() { return listsize; }
+    public int size() { return listSize; }
 
     @Override
     public boolean isEmpty() {
         boolean result = false;
-        if (listsize == 0)
+        if (listSize == 0)
             result = true;
         return result;
     }
 
     @Override
     public boolean contains(Object o) {
-        boolean result = false;
-        //
+        boolean result = true;
+        if(indexOf(o) == -1)
+            result = false;
         return result;
     }
 
     @Override
     public Iterator iterator() {
-        //
-        return null;
+        Iterator it = new MyIterator();
+        return it;
     }
 
     @Override
@@ -66,7 +162,7 @@ public class MyLinkedList<T> implements List<T> {
             Node<T> newNode = new Node<T>(e, head, head.prev);
             newNode.prev.next = newNode;
             newNode.next.prev = newNode;
-            listsize++;
+            listSize++;
             result = true;
         }
         catch (Exception ex) {
@@ -79,7 +175,7 @@ public class MyLinkedList<T> implements List<T> {
     @Override
     public boolean remove(Object o) {
         boolean result = false;
-        //if(listsize == 0)
+        //if(listSize == 0)
         //    return result;
 
         Node<T> i = head;
@@ -92,7 +188,7 @@ public class MyLinkedList<T> implements List<T> {
                     i.next = null;
                     i.prev = null;
                     i.data = null;
-                    listsize--;
+                    listSize--;
                     result = true;
                     break;
                 }
@@ -146,8 +242,8 @@ public class MyLinkedList<T> implements List<T> {
     @Override
     public void clear() {
         try {
-            while (listsize > 0)
-                remove(listsize - 1);
+            while (listSize > 0)
+                remove(listSize - 1);
         }
         catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at void clear()"); }
     }
@@ -156,8 +252,8 @@ public class MyLinkedList<T> implements List<T> {
     private Node<T> getNode(int index) {
         Node<T> e = head;
         try {
-            if(index < 0 || index >= listsize)
-                throw new IndexOutOfBoundsException("Index: " + index + " size: " + listsize);
+            if(index < 0 || index >= listSize)
+                throw new IndexOutOfBoundsException("Index: " + index + " size: " + listSize);
 
             for(int i = 0; i <= index; i++)
                 e = e.next;
@@ -185,14 +281,14 @@ public class MyLinkedList<T> implements List<T> {
     public T set(int index, T element) {
         Node<T> e = head;
         try {
-            if(index < 0 || index >= listsize)
-                throw new IndexOutOfBoundsException("Index: " + index + " size: " + listsize);
+            if(index < 0 || index >= listSize)
+                throw new IndexOutOfBoundsException("Index: " + index + " size: " + listSize);
             for(int i = 0; i < index; i++)
                 e = e.next;
             T result = e.data;
             e.data = element;
         }
-        catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at T set(int index, T element)");}
+        catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at T set(int index, T element)"); }
         return e.data;
     }
 
@@ -206,7 +302,7 @@ public class MyLinkedList<T> implements List<T> {
             Node<T> newNode= new Node<T>(element, e, e.prev);
             newNode.prev.next = newNode;
             newNode.next.prev = newNode;
-            listsize++;
+            listSize++;
         }
         catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at T set(int index, T element)"); }
     }
@@ -225,7 +321,7 @@ public class MyLinkedList<T> implements List<T> {
             e.next = null;
             e.prev = null;
             e.data = null;
-            listsize--;
+            listSize--;
         }
         catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at T remove(int index)"); }
 
@@ -239,7 +335,7 @@ public class MyLinkedList<T> implements List<T> {
         try {
             // Тут стоит вставить проверку на null, и проверку соответствие типов
 
-            for(; index <= listsize; index++) {
+            for(; index <= listSize; index++) {
                 if(e.data == o)
                     break;
                 e = e.next;
@@ -247,7 +343,7 @@ public class MyLinkedList<T> implements List<T> {
         }
         catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at indexOf(Object o)"); }
 
-        if((index == listsize && head.prev.data != o) || (index == 0 && head.next.data != o) )
+        if((index == listSize && head.prev.data != o) || (index == 0 && head.next.data != o) )
             index = -1;
         return index;
     }
@@ -258,9 +354,9 @@ public class MyLinkedList<T> implements List<T> {
         int index2 = -1;
         Node<T> e = head;
         try {
-            // Тут стоит вставить проверку на null, и проверку соответствия типов
+            // Тут стоит вставить проверку на null и проверку соответствия типов
 
-            for(; index <= listsize; index++) {
+            for(; index <= listSize; index++) {
                 if(e.data == o)
                     index2 = index;
                 e = e.next;
@@ -269,43 +365,123 @@ public class MyLinkedList<T> implements List<T> {
         catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at indexOf(Object o)"); }
 
 
-        if(index2 == listsize && head.prev.data != o)
+        if(index2 == listSize && head.prev.data != o)
             index2 = -1;
         return index2;
     }
 
     @Override
-    public ListIterator listIterator() {
-        return null;
+    public ListIterator<T> listIterator() {
+        MyListIterator it = new MyListIterator();
+        return it;
     }
 
     @Override
-    public ListIterator listIterator(int index) {
-        return null;
+    public ListIterator<T> listIterator(int index) {
+        MyListIterator it = new MyListIterator();
+        try {
+            if(index < 0 || index >= MyLinkedList.this.listSize)
+                throw new IndexOutOfBoundsException("Index: " + index + " listSize: " + listSize);
+            while(it.nextIndex() <= index)
+                it.next();
+        }
+        catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at listIterator(int index);"); }
+        return it;
     }
 
+    
+    // можно было сделать и в обратном порядке (от listSize до 0) 
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
-        return null;
+        MyLinkedList<T> l = new MyLinkedList<T>();
+        
+        try {
+            if(fromIndex < 0 || toIndex < 0 || fromIndex > listSize || toIndex > listSize || fromIndex > toIndex)
+                throw new IndexOutOfBoundsException("Index: " + fromIndex + ", " + toIndex + " listSize: " + listSize);
+            for(int i = fromIndex; i <= toIndex; i++)
+                l.add( get(i) );
+        }
+        catch (Exception ex) {System.out.println("Error: " + ex.getMessage() + " at subList(int fromIndex, int toIndex);"); }
+        return l;
     }
 
     @Override
     public boolean retainAll(Collection c) {
-        return false;
+        boolean result = true;
+        try {
+            for (var i : this) {
+                if ( !c.contains(i) )
+                    this.remove(i);
+            }
+        }
+        catch(Exception ex) {
+            result = false;
+            System.err.println("Error: " + ex.getMessage() + " at retainAll(Collection c);");
+        }
+
+        return result;
     }
 
     @Override
     public boolean removeAll(Collection c) {
-        return false;
+        boolean result = true;
+        try {
+            for (var i : c) {
+                if (indexOf(i) == -1) {
+                    result = false;
+                    break;
+                }
+                else {
+                    while(indexOf(i) != -1) {
+                        remove(i);
+                    }
+                }
+            }
+        }
+        catch(Exception ex) {
+            result = false;
+            System.err.println("Error: " + ex.getMessage() + " at removeAll(Collection c);");
+        }
+
+        return result;
     }
 
     @Override
     public boolean containsAll(Collection c) {
-        return false;
+        boolean result = true;
+        try {
+            for (var i : c) {
+                if (indexOf(i) == -1) {
+                    result = false;
+                    break;
+                }
+            }
+        }
+        catch(Exception ex) {
+            result = false;
+            System.err.println("Error: " + ex.getMessage() + " at containsAll(Collection c);");
+        }
+
+        return result;
     }
+
+
+    // не знаю как перевести список в массив
+    //
 
     @Override
     public T[] toArray() {
+        /*T[] arr = (T[])new Object[listSize];
+        // T[] arr = new T[listSize];
+
+        ListIterator<T> it = MyLinkedList.this.listIterator();
+
+        for (int i = 0; i < listSize; i++ )
+            if(it.hasNext())
+                arr[i] = it.next();
+
+        return arr;
+         */
         return null;
     }
 
