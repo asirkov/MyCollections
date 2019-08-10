@@ -14,7 +14,7 @@ public class MyArrayList<T> implements List<T> {
         @Override
         public boolean hasNext() {
             boolean result = true;
-            if (MyArrayList.this.data[index + 1] == null)
+            if(index >= MyArrayList.this.listSize || index < 0)
                 result = false;
             return result;
         }
@@ -23,7 +23,7 @@ public class MyArrayList<T> implements List<T> {
         public T next() {
             T result = null;
             try {
-                if(index >= MyArrayList.this.listSize || index < 0)
+                if(index > MyArrayList.this.listSize || index < 0)
                     throw new NoSuchElementException();
                 result = data[index++];
             }
@@ -32,50 +32,55 @@ public class MyArrayList<T> implements List<T> {
         }
     }
 
-    /*
+
 
     private class MyListIterator implements ListIterator {
-        private Node<T> node;
+        private int index;
 
-        MyListIterator() { node = MyLinkedList.this.head.next; }
+        MyListIterator() { index = 0; }
 
         @Override
         public boolean hasNext() {
-            boolean result = false;
-            if (node.next != head)
-                result = true;
+            boolean result = true;
+            if(index >= MyArrayList.this.listSize || index < 0)
+                result = false;
             return result;
         }
 
         @Override
         public T next() {
-            T result = node.data;
+            T result = null;
             try {
-                node = node.next;
+                if(index > MyArrayList.this.listSize || index < 0)
+                    throw new NoSuchElementException();
+                result = data[index++];
             }
-            catch (NoSuchElementException ex) { System.out.println("Error: " + ex.getMessage() + " at MyListIterator.next()"); }
+            catch (NoSuchElementException ex) { System.out.println("Error at MyListIterator.next()\nError message: " + ex.getMessage()); }
             return result;
         }
 
         @Override
         public boolean hasPrevious() {
-            boolean result = false;
-            if (node.prev != head)
-                result = true;
+            boolean result = true;
+            if(index >= MyArrayList.this.listSize || index <= 0)
+                result = false;
             return result;
         }
 
         @Override
         public T previous() {
-            T result = node.data;
-            node = node.prev;
+            T result = null;
+            try {
+                if(index > MyArrayList.this.listSize || index <= 0)
+                    throw new NoSuchElementException();
+                result = data[index--];
+            }
+            catch (NoSuchElementException ex) { System.out.println("Error at MyListIterator.previous()\nError message: " + ex.getMessage()); }
             return result;
         }
 
-
         public int currentIndex() {
-            int result = MyLinkedList.this.indexOf(node.data);
-            return result;
+            return index;
         }
 
         @Override
@@ -93,21 +98,20 @@ public class MyArrayList<T> implements List<T> {
         @Override
         public void remove() {
             //T remove =
-            MyLinkedList.this.remove(MyLinkedList.this.listSize);
+            MyArrayList.this.remove(index);
         }
 
         @Override
         public void set(Object o) {
-            MyLinkedList.this.set(MyLinkedList.this.indexOf(node.data), (T)o);
+            MyArrayList.this.set(index, (T)o);
         }
 
         @Override
         public void add(Object o) {
-            MyLinkedList.this.add(MyLinkedList.this.indexOf(node.data), (T)o);
+            MyArrayList.this.add(index, (T)o);
         }
     };
 
-     */
     /**
      *
      */
@@ -160,8 +164,7 @@ public class MyArrayList<T> implements List<T> {
         return null;
     }
 
-    private void /*boolean*/ ensureCapacity(int capacity) {
-        //boolean result = false;
+    private void ensureCapacity(int capacity) {
         try {
             if (capacity >=  data.length) {
                 T[] oldData = data;
@@ -189,15 +192,14 @@ public class MyArrayList<T> implements List<T> {
         return result;
     }
 
-    // не уверен, проверить
     @Override
     public boolean remove(Object o) {
         boolean result;
         int index;
         try {
             index = indexOf(o); // -
-            System.arraycopy(data, index, data, index - 1, listSize - 1);
-            listSize--;
+            System.arraycopy(data, index + 1, data, index, listSize - 1);
+            data[--listSize] = null;
             result = true;
         }
         catch (Exception ex) {
@@ -209,16 +211,40 @@ public class MyArrayList<T> implements List<T> {
 
     @Override
     public boolean containsAll(Collection<?> c) {
-        return false;
+        boolean result = true;
+        try {
+            for(var i : c)
+                if(indexOf(i) == -1) {
+                    result = false;
+                    break;
+                }
+        }
+        catch (Exception ex) {
+            result = false;
+            System.err.println("Error at MyArrayList.containsAll(Collection<>)\nError message: " + ex.getMessage());
+        }
+        return result;
     }
 
     @Override
     public boolean addAll(Collection<? extends T> c) {
-        return false;
+        boolean result = true;
+        int collSize = c.size();
+        T[] collData;
+        try{
+            collData = (T[])c.toArray();
+            ensureCapacity(listSize + collSize);
+            System.arraycopy(collData, 0, data, listSize - 1, collSize);
+            listSize += collSize;
+        }
+        catch (Exception ex) {
+            result = false;
+            System.err.println("Error at MyArrayList.addAll(Collection<>)\nError message: " + ex.getMessage());
+        }
+
+        return result;
     }
 
-    // возникает бесконечный цикл, нужно исправить
-    //
     @Override
     public boolean addAll(int index, Collection<? extends T> c) {
         boolean result = true;
@@ -231,7 +257,7 @@ public class MyArrayList<T> implements List<T> {
             ensureCapacity(listSize + collSize);
             System.arraycopy(data, index, data, index + collSize, listSize - index);
             System.arraycopy(collData, 0, data, index, collSize);
-            listSize += data.length;
+            listSize += collSize;
         }
         catch (Exception ex) {
             result = false;
@@ -243,17 +269,40 @@ public class MyArrayList<T> implements List<T> {
 
     @Override
     public boolean removeAll(Collection<?> c) {
-        return false;
+        boolean result = true;
+        try {
+            for(var i : c)
+                while(indexOf(i) != -1) {
+                    remove(i);
+                }
+        }
+        catch (Exception ex) {
+            result = false;
+            System.err.println("Error at MyArrayList.removeAll(Collection<>)\nError message: " + ex.getMessage());
+        }
+        return result;
     }
 
     @Override
     public boolean retainAll(Collection<?> c) {
-        return false;
+        boolean result = true;
+        try {
+            for(var i : data)
+                if( !c.contains(i) ) {
+                    remove(i);
+                }
+        }
+        catch (Exception ex) {
+            result = false;
+            System.err.println("Error at MyArrayList.removeAll(Collection<>)\nError message: " + ex.getMessage());
+        }
+        return result;
     }
 
     @Override
     public void clear() {
-
+        data = (T[]) new Object[10];
+        listSize = 0;
     }
 
     @Override
@@ -302,7 +351,7 @@ public class MyArrayList<T> implements List<T> {
             if(index < 0 || index > listSize)
                 throw new IndexOutOfBoundsException("Index: " + index + " listSize: " + listSize);
             result = data[index];
-            int numMoved = listSize - index - 1;
+            int numMoved = listSize - index;
             System.arraycopy(data, index + 1, data, index, numMoved);
             data[--listSize] = null;
         }
@@ -340,16 +389,34 @@ public class MyArrayList<T> implements List<T> {
 
     @Override
     public ListIterator<T> listIterator() {
-        return null;
+        return new MyListIterator();
     }
 
     @Override
     public ListIterator<T> listIterator(int index) {
-        return null;
+        MyListIterator it = new MyListIterator();
+        try {
+            if(index < 0 || index > listSize)
+                throw new IndexOutOfBoundsException("Index: " + index + " listSize: " + listSize);
+            while(it.currentIndex() < index)
+                it.next();
+        }
+        catch (Exception ex) { System.err.println("Error at MyArrayList.listIterator(int)\nError message: " + ex.getMessage()); }
+        return it;
     }
 
+    // можно реализовать через System.arraycopy();
     @Override
     public List<T> subList(int fromIndex, int toIndex) {
-        return null;
+        MyArrayList<T> result = new MyArrayList<>();
+        T[] newData;
+        try {
+            if(fromIndex < 0 || fromIndex > listSize || toIndex < 0 || toIndex > listSize || fromIndex > toIndex)
+                throw new IndexOutOfBoundsException("Index: " + fromIndex + ", " + toIndex + " listSize: " + listSize);
+            result.addAll(Arrays.asList(data).subList(fromIndex, toIndex));
+        }
+        catch (Exception ex) { System.err.println("Error at MyArrayList.subList(int, int)\nError message: " + ex.getMessage()); }
+
+        return result;
     }
 }
