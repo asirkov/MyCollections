@@ -37,7 +37,7 @@ public class MyLinkedList<T> implements List<T> {
             try {
                 node = node.next;
             }
-            catch (NoSuchElementException ex) { System.out.println("Error: " + ex.getMessage() + " at MyIterator.next()"); }
+            catch (NoSuchElementException ex) { System.err.println("Error: " + ex.getMessage() + " at MyIterator.next()"); }
             return result;
         }
     }
@@ -61,7 +61,7 @@ public class MyLinkedList<T> implements List<T> {
             try {
                 node = node.next;
             }
-            catch (NoSuchElementException ex) { System.out.println("Error: " + ex.getMessage() + " at MyListIterator.next()"); }
+            catch (NoSuchElementException ex) { System.err.println("Error: " + ex.getMessage() + " at MyListIterator.next()"); }
             return result;
         }
 
@@ -245,7 +245,7 @@ public class MyLinkedList<T> implements List<T> {
             while (listSize > 0)
                 remove(listSize - 1);
         }
-        catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at void clear()"); }
+        catch (Exception ex) { System.err.println("Error: " + ex.getMessage() + " at void clear()"); }
     }
 
 
@@ -258,7 +258,7 @@ public class MyLinkedList<T> implements List<T> {
             for(int i = 0; i <= index; i++)
                 e = e.next;
         }
-        catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at T get(int index)"); }
+        catch (Exception ex) { System.err.println("Error: " + ex.getMessage() + " at T get(int index)"); }
 
         return e;
     }
@@ -271,7 +271,7 @@ public class MyLinkedList<T> implements List<T> {
             e = getNode(index);
             result = e.data;
         }
-        catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at T get(int index)"); }
+        catch (Exception ex) { System.err.println("Error: " + ex.getMessage() + " at T get(int index)"); }
 
         return result;
     }
@@ -288,7 +288,7 @@ public class MyLinkedList<T> implements List<T> {
             T result = e.data;
             e.data = element;
         }
-        catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at T set(int index, T element)"); }
+        catch (Exception ex) { System.err.println("Error: " + ex.getMessage() + " at T set(int index, T element)"); }
         return e.data;
     }
 
@@ -304,7 +304,7 @@ public class MyLinkedList<T> implements List<T> {
             newNode.next.prev = newNode;
             listSize++;
         }
-        catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at T set(int index, T element)"); }
+        catch (Exception ex) { System.err.println("Error: " + ex.getMessage() + " at T set(int index, T element)"); }
     }
 
     @Override
@@ -323,7 +323,7 @@ public class MyLinkedList<T> implements List<T> {
             e.data = null;
             listSize--;
         }
-        catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at T remove(int index)"); }
+        catch (Exception ex) { System.err.println("Error: " + ex.getMessage() + " at T remove(int index)"); }
 
         return result;
     }
@@ -341,7 +341,7 @@ public class MyLinkedList<T> implements List<T> {
                 e = e.next;
             }
         }
-        catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at indexOf(Object o)"); }
+        catch (Exception ex) { System.err.println("Error: " + ex.getMessage() + " at indexOf(Object o)"); }
 
         if((index == listSize && head.prev.data != o) || (index == 0 && head.next.data != o) )
             index = -1;
@@ -362,7 +362,7 @@ public class MyLinkedList<T> implements List<T> {
                 e = e.next;
             }
         }
-        catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at indexOf(Object o)"); }
+        catch (Exception ex) { System.err.println("Error: " + ex.getMessage() + " at indexOf(Object o)"); }
 
 
         if(index2 == listSize && head.prev.data != o)
@@ -385,7 +385,7 @@ public class MyLinkedList<T> implements List<T> {
             while(it.nextIndex() <= index)
                 it.next();
         }
-        catch (Exception ex) { System.out.println("Error: " + ex.getMessage() + " at listIterator(int index);"); }
+        catch (Exception ex) { System.err.println("Error: " + ex.getMessage() + " at listIterator(int index);"); }
         return it;
     }
 
