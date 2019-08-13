@@ -18,10 +18,7 @@ public class Main {
             System.out.print(i + " ");
         System.out.println();
 
-        l2.reverse();
-        //l2 = SingleLinkedList.reverse(l);
-
-
+        l2 = SingleLinkedList.reverse(l);
 
         Iterator it = l2.iterator();
         for(int i = 0; i < l2.size(); i++)

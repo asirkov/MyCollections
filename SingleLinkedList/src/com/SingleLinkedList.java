@@ -47,7 +47,6 @@ public class SingleLinkedList<T> implements List {
     }
 
 
-
     private Node<T> head;
     private Node<T> tail;
     private int listSize;
@@ -57,15 +56,36 @@ public class SingleLinkedList<T> implements List {
         head = tail = null;
     }
 
-    public static <T> SingleLinkedList<T> reverse(SingleLinkedList<T> list) {
-        T[] array = (T[]) list.toArray();
-        SingleLinkedList<T> result = new SingleLinkedList<T>();
+    // Нужно проверить, но вроде работает
+    private void addFirst(T t) {
+        try {
+            if(listSize == 0) {
+                head = new Node<T>( t, head);
+                tail = head;
+            }
+            else {
+                tail.next = new Node<T>(t, head);
+                head = tail.next;
+            }
+            listSize++;
+        }
+        catch (Exception ex) {
+            System.out.println("Error at addFirst(T )");
+        }
+    }
 
-        for(int i = array.length - 1; i >= 0; i--) {
-            result.add(array[i]);
+
+    public static <T> SingleLinkedList<T> reverse(SingleLinkedList<T> list) {
+
+        SingleLinkedList<T> result = new SingleLinkedList<T>();
+        Iterator it = list.iterator();
+
+        for(int i = 0; i < list.size(); i++) {
+            result.addFirst((T) it.next());
         }
         return result;
     }
+
 
     public void reverse() {
         T[] array = (T[]) this.toArray();
@@ -78,9 +98,12 @@ public class SingleLinkedList<T> implements List {
 
     public T getThirdFromTail() {
         T result = null;
-        T[] array = (T[]) this.toArray();
         try {
-            result = array[listSize - 4];
+            Iterator it = this.iterator();
+            for(int i = 0; i < this.listSize - 3; i++) {
+                it.next();
+            }
+            result = (T) it.next();
         }
         catch (Exception ex) { /* */ }
 
