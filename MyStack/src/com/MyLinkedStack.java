@@ -94,7 +94,7 @@ public class MyLinkedStack <T> {
         }
         StringBuilder sb = new StringBuilder("[");
         for(Iterator it = this.iterator(); it.hasNext(); ) {
-            sb.append(it.next().toString() + (it.hasNext() ? ", " : "]") );
+            sb.append( it.next().toString() ).append( it.hasNext() ? ", " : "]" );
         }
         return sb.toString();
     }
